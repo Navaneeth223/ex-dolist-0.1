@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Task Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            background-color: #f0f0f0;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        input[type="text"] {
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            width: 100%;
+            max-width: 400px;
+            transition: border-color 0.3s ease;
+            font-size: 1em;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+        }
+
+        button {
+            padding: 15px 30px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 1.1em;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            background-color: #388E3C;
+            transform: translateY(0);
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 12px;
+            background-color: #f5f5f5;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 1em;
+        }
+
+        .task-item:hover {
+            background-color: #f0f0f0;
+            transform: translateX(5px);
+        }
+
+        .task-item span {
+            flex: 1;
+            margin-right: 15px;
+            word-wrap: break-word;
+        }
+
+        .task-item.completed span {
+            text-decoration: line-through;
+            color: #aaa;
+        }
+
+        .task-item button {
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+
+        .task-item button.complete {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .task-item button.complete:hover {
+            background-color: #45a049;
+        }
+
+        .task-item button.delete {
+            background-color: #e53935;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .task-item button.delete:hover {
+            background-color: #c62828;
+        }
+
+        .streak-info {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .animation-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .checkmark {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            opacity: 0;
+            animation: fadeInScale 0.3s ease-in-out forwards, pulse 0.5s ease-in-out 0.3s;
+        }
+
+        .checkmark::after {
+            content: '';
+            position: absolute;
+            top: 35%;
+            left: 40%;
+            width: 24px;
+            height: 48px;
+            border-right: 10px solid white;
+            border-bottom: 10px solid white;
+            transform: rotate(45deg);
+        }
+
+        @keyframes fadeInScale {
+            from {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 30px;
+            }
+
+            .input-section {
+                gap: 12px;
+            }
+
+            input[type="text"],
+            button {
+                width: 100%;
+                max-width: none;
+            }
+
+            .task-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .task-item span {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>My Task Tracker</h1>
+        <div class="input-section">
+            <input type="text" id="newTaskInput" placeholder="Enter your task...">
+            <button id="addTaskButton">Add Task</button>
+        </div>
+        <ul class="task-list" id="taskList">
+            </ul>
+        <div class="streak-info" id="streakInfo">
+            Your Streak: 0 days
+        </div>
+        <div class="animation-container">
+            <div class="checkmark" id="checkmarkAnimation"></div>
+        </div>
+    </div>
+
+    <script>
+        const taskList = document.getElementById('taskList');
+        const newTaskInput = document.getElementById('newTaskInput');
+        const addTaskButton = document.getElementById('addTaskButton');
+        const streakInfoDisplay = document.getElementById('streakInfo');
+        const checkmarkAnimation = document.getElementById('checkmarkAnimation');
+
+        let tasks = [];
+        let streak = 0;
+        let lastCompletionDate = localStorage.getItem('lastCompletionDate') || '';
+
+        function loadTasks() {
+            const storedTasks = localStorage.getItem('tasks');
+            if (storedTasks) {
+                tasks = JSON.parse(storedTasks);
+            }
+            renderTasks();
+            loadStreak();
+        }
+
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        function loadStreak() {
+          const storedStreak = localStorage.getItem('streak');
+          const storedLastCompletionDate = localStorage.getItem('lastCompletionDate');
+
+          if (storedStreak) {
+            streak = parseInt(storedStreak, 10);
+          }
+          if (storedLastCompletionDate) {
+            lastCompletionDate = storedLastCompletionDate;
+          }
+          updateStreakDisplay();
+        }
+
+        function saveStreak() {
+            localStorage.setItem('streak', streak);
+            localStorage.setItem('lastCompletionDate', lastCompletionDate);
+        }
+
+        function addTask() {
+            const newTaskText = newTaskInput.value.trim();
+
+            if (newTaskText !== '') {
+                tasks.push({
+                    text: newTaskText,
+                    completed: false,
+                });
+                saveTasks();
+                renderTasks();
+                newTaskInput.value = '';
+            }
+        }
+
+      function toggleTaskCompletion(index) {
+        const today = new Date().toDateString();
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayString = yesterday.toDateString();
+        const task = tasks[index];
+
+        task.completed = !task.completed;
+        saveTasks();
+        renderTasks();
+
+        if (task.completed) {
+          let taskCompletionDate = localStorage.getItem(`completionDate_${task.text}`);
+          if (!taskCompletionDate) {
+            localStorage.setItem(`completionDate_${task.text}`, today);
+          }
+
+          if (lastCompletionDate === today) {
+            // do nothing
+          }
+          else if (lastCompletionDate === yesterdayString) {
+                streak++;
+          }
+          else {
+            streak = 1;
+          }
+          lastCompletionDate = today;
+          saveStreak();
+          animateCheckmark();
+        }
+        else{
+          if(streak > 0){
+            streak--;
+            saveStreak();
+          }
+        }
+        updateStreakDisplay();
+      }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            saveTasks();
+            renderTasks();
+        }
+
+        function renderTasks() {
+            taskList.innerHTML = '';
+
+            tasks.forEach((task, index) => {
+                const taskItem = document.createElement('li');
+                taskItem.classList.add('task-item');
+                if (task.completed) {
+                    taskItem.classList.add('completed');
+                }
+
+                taskItem.innerHTML = `
+                    <span>${task.text}</span>
+                    <div>
+                        <button class="complete" onclick="toggleTaskCompletion(${index})">
+                            ${task.completed ? 'Undo' : 'Complete'}
+                        </button>
+                        <button class="delete" onclick="deleteTask(${index})">Delete</button>
+                    </div>
+                `;
+
+                taskList.appendChild(taskItem);
+            });
+        }
+
+        function updateStreakDisplay() {
+            streakInfoDisplay.textContent = `Your Streak: ${streak} day${streak !== 1 ? 's' : ''}`;
+        }
+
+        function animateCheckmark() {
+            checkmarkAnimation.style.display = 'block';
+            checkmarkAnimation.classList.add('checkmark');
+
+            setTimeout(() => {
+                checkmarkAnimation.classList.remove('checkmark');
+                checkmarkAnimation.style.display = 'none';
+            }, 800);
+        }
+
+        addTaskButton.addEventListener('click', addTask);
+        loadTasks();
+    </script>
+</body>
+</html>
